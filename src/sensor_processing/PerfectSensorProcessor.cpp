@@ -6,7 +6,10 @@ namespace elevation_mapping
 PerfectSensorProcessor::PerfectSensorProcessor(
     const std::string _sensor_frame, const std::string _map_frame, const std::string& _robot_frame)
     : SensorProcessorBase(_sensor_frame, _map_frame, _robot_frame)
-{}
+{
+    std::cout << "Sensor frame: "<< _sensor_frame << " Map frame : " << _map_frame << " robot frame : " << _robot_frame << std::endl;
+
+}
 
 PerfectSensorProcessor::~PerfectSensorProcessor() {}
 

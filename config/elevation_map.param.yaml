@@ -1,22 +1,27 @@
 /**:
   ros__parameters:
     # frame IDs
-    map_frame: "map"
-    robot_frame: "camera_link" # Use d435i cam link for now
-    sensor_frame: "camera_depth_optical_frame" # depth camera frame
+    map_frame: "lidar_initial"
+    # map_frame: "oak-d-base-frame"
+    # robot_frame: "oak_imu_frame" # Use d435i cam link for now
+    robot_frame: "body" # Use d435i cam link for now
+    # sensor_frame: "oak-d_frame" # depth camera frame
+    sensor_frame: "os_lidar" # depth camera frame
     # pose update
     use_pose_update: false # update variance with robot pose covariance
     pose_cache_size: 10 # number of poses to cache in loopup buffer
     # visibility clean up
-    use_visibility_clean_up: true # cleanup blocking points wiz ray tracing
-    extract_vaild_area: true
+    use_visibility_clean_up: false # cleanup blocking points wiz ray tracing
+    extract_valid_area: false
 
     # grid map
     grid_map:
       logger_name: "ElevationMap"
-      lateral_length: 10.0
-      longitudinal_length: 10.0
-      resolution: 0.05
+      lateral_length: 50.0
+      # lateral_length: 2.0
+      longitudinal_length: 50.0
+      # longitudinal_length: 2.0
+      resolution: 0.20
       initial_position_x: 0.0
       initial_position_y: 0.0
       min_normal_variance: 0.0001
@@ -25,18 +30,18 @@
       max_horizontal_variance: 0.5
       mahalanobis_distance_thres: 2.5 # rule out outliers
       multi_height_noise: 0.00009
-      scanning_duration: 0.5
+      scanning_duration: 0.005
       increase_height_alpha: 0.1
 
     ## sensor processing
     ##Ideal sensor for debugging
-    # sensor:
-    #   logger_name: PerfectSensorProcessor
-    #   type: "perfect"
-    #   use_voxel_filter: true
-    #   voxel_leaf_size: 0.05
-    #   pass_filter_lower_threshold: -100.0 # -infinity
-    #   pass_filter_upper_threshold: 0.4
+    sensor:
+      logger_name: PerfectSensorProcessor
+      type: "perfect"
+      use_voxel_filter: true
+      voxel_leaf_size: 0.1
+      pass_filter_lower_threshold: -100.0 # -infinity
+      pass_filter_upper_threshold: 12.0
 
     # sensor:
       # logger_name: StereoSensorProcessor
@@ -49,17 +54,19 @@
       # coef_lateral_variance: 0.0001
 
     # D435I
-    sensor:
-      logger_name: StructureLightProcessor
-      type: "realsense"
-      cutoff_min_depth: 0.2
-      cutoff_max_depth: 3.25
-      normal_factor_a: 0.000611
-      normal_factor_b:  0.003587
-      normal_factor_c: 0.3515
-      normal_factor_d: 0.0
-      normal_factor_e: 1.0
-      lateral_factor: 0.01576
+    #sensor:
+    #  logger_name: StructureLightProcessor
+    #  type: "realsense"
+    #  cutoff_min_depth: 0.2
+    #  cutoff_max_depth: 3.25
+    #  normal_factor_a: 0.000611
+    #  normal_factor_b:  0.003587
+    #  normal_factor_c: 0.3515
+    #  normal_factor_d: 0.0
+    #  normal_factor_e: 1.0
+    #  lateral_factor: 0.01576
 
     robot_motion_updater:
       logger_name: RobotMotionUpdater
+
+    

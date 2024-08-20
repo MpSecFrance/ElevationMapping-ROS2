@@ -1,4 +1,5 @@
 from launch import LaunchDescription
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 import os
@@ -49,11 +50,13 @@ def generate_launch_description():
     #     output = 'screen'
     # )
 
+    use_sim_time = LaunchConfiguration("use_sim_time",default=True)
+
     elevation_mapping_composition = Node(
         package='elevation_mapping_ros2', 
         executable='elevation_mapping_ros2_composition', 
         name='elevation_mapping_ros2_composition', 
-        parameters=[params, params_post_processing], 
+        parameters=[params, params_post_processing,use_sim_time], 
         remappings=[("elevation_mapping/input/point_cloud", topic_name["input"]["point_cloud"]), 
                     ("elevation_mapping/input/pose", topic_name["input"]["pose_covariance"]), 
                     ("elevation_mapping/output/raw_map", topic_name["output"]["raw_map"]), 

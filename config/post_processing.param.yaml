@@ -9,7 +9,7 @@
         params:
           input_layer: elevation
           output_layer: elevation_inpainted
-          radius: 0.11
+          radius: 0.15
 
       filter2:
         name: mean_in_radius
@@ -17,30 +17,30 @@
         params:
           input_layer: elevation_inpainted
           output_layer: elevation_smooth
-          radius: 0.11
+          radius: 0.15
           
-      filter3:
-        name: surface_normals
-        type: gridMapFilters/NormalVectorsFilter
-        params:
-          input_layer: elevation_inpainted
-          output_layers_prefix: normal_vectors_
-          radius: 0.11
-          normal_vector_positive_axis: z
+      # filter3:
+      #   name: surface_normals
+      #   type: gridMapFilters/NormalVectorsFilter
+      #   params:
+      #     input_layer: elevation_inpainted
+      #     output_layers_prefix: normal_vectors_
+      #     radius: 0.15
+      #     normal_vector_positive_axis: z
 
-      filter4:  # Compute slope from surface normal.
-        name: slope
-        type: gridMapFilters/MathExpressionFilter
-        params:
-          output_layer: slope
-          expression: acos(normal_vectors_z)
+      # filter4:  # Compute slope from surface normal.
+      #   name: slope
+      #   type: gridMapFilters/MathExpressionFilter
+      #   params:
+      #     output_layer: slope
+      #     expression: acos(normal_vectors_z)
 
-      filter5: # Compute roughness as absolute difference from map to smoothened map.
-        name: roughness
-        type: gridMapFilters/MathExpressionFilter
-        params:
-          output_layer: roughness
-          expression: abs(elevation_inpainted - elevation_smooth)
+      # filter5: # Compute roughness as absolute difference from map to smoothened map.
+      #   name: roughness
+      #   type: gridMapFilters/MathExpressionFilter
+      #   params:
+      #     output_layer: roughness
+      #     expression: abs(elevation_inpainted - elevation_smooth)
 
       # filter6: # Compute traversability as normalized weighted sum of slope and roughness.
       #   name: traversability

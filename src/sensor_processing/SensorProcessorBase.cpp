@@ -8,6 +8,7 @@ SensorProcessorBase::SensorProcessorBase(
     : kSensorFrameID_(_sensor_frame), kMapFrameID_(_map_frame), kRobotFrameID_(_robot_frame)
 {
     clock_ = std::make_shared<rclcpp::Clock>(RCL_ROS_TIME);
+
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(clock_);
     tf_listener_ = std::make_unique<tf2_ros::TransformListener>(*tf_buffer_);   
 }
@@ -58,18 +59,25 @@ bool SensorProcessorBase::updateTransformations()
 {
     try {  
         // sensor to map
-        geometry_msgs::msg::TransformStamped transformTF = tf_buffer_->lookupTransform(kSensorFrameID_, kMapFrameID_, current_time_point_, tf2::durationFromSec(1.0));
+        // RCLCPP_INFO(rclcpp::get_logger(logger_name_), "look transform from %s to %s",kSensorFrameID_,kMapFrameID_);
+        // std::cout << "from :" << kSensorFrameID_ << " -> " << kMapFrameID_ << " at time : "  << std::endl;
+        geometry_msgs::msg::TransformStamped transformTF = tf_buffer_->lookupTransform(kSensorFrameID_, kMapFrameID_, tf2::TimePointZero, tf2::durationFromSec(1.0));
         transform_sensor2map_= tf2::transformToEigen(transformTF);
+        // std::cout <<"sucess to transfrom from :" << kSensorFrameID_ << " -> " << kMapFrameID_ << std::endl;
         
         // base to sensor
         transformTF = tf_buffer_->lookupTransform(kRobotFrameID_, kSensorFrameID_, current_time_point_, tf2::durationFromSec(1.0));
+        // std::cout <<"sucess to transfrom from :" << kRobotFrameID_ << " -> " << kSensorFrameID_ << std::endl;
+
         Eigen::Affine3d transform_affine;
         transform_affine = tf2::transformToEigen(transformTF);
         rotation_base2sensor_ = transform_affine.rotation().matrix();
         translation_base2sensor_ = transform_affine.translation();
 
+
         // map to base
         transformTF = tf_buffer_->lookupTransform(kMapFrameID_, kRobotFrameID_, current_time_point_, tf2::durationFromSec(1.0));
+        // std::cout <<"sucess to transfrom from :" << kMapFrameID_ << " -> " << kRobotFrameID_ << std::endl;
         Eigen::Affine3d transform_tf_affine;
         transform_tf_affine = tf2::transformToEigen(transformTF);
         rotation_map2base_ = transform_tf_affine.rotation().matrix();
@@ -80,9 +88,12 @@ bool SensorProcessorBase::updateTransformations()
     }
     catch(const tf2::TransformException& e)
     {
+        RCLCPP_ERROR(rclcpp::get_logger(logger_name_), "TF error in sensor base error : %s", e.what());
+        RCLCPP_ERROR(rclcpp::get_logger(logger_name_), "%s", e.what());
         if (!first_tf_available_) {
             return false;
         }
+        RCLCPP_ERROR(rclcpp::get_logger(logger_name_), "TF error in sensor base error : %s", e.what());
         RCLCPP_ERROR(rclcpp::get_logger(logger_name_), "%s", e.what());
         return false;
     }

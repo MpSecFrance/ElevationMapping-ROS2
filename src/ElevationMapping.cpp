@@ -14,9 +14,11 @@ ElevationMapping::ElevationMapping(const rclcpp::NodeOptions options)
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     tf_listener_ = std::make_unique<tf2_ros::TransformListener>(*tf_buffer_);
 
+    auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(10)).reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+
     // subscriber
     sub_point_cloud_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-        "elevation_mapping/input/point_cloud", 10, std::bind(&ElevationMapping::callbackPointcloud, this, _1)
+        "elevation_mapping/input/point_cloud", qos_profile, std::bind(&ElevationMapping::callbackPointcloud, this, _1)
     );
 
     // Publish type GridMap
@@ -52,6 +54,7 @@ ElevationMapping::~ElevationMapping() {}
 // Raw pointcloud callback
 void ElevationMapping::callbackPointcloud(const sensor_msgs::msg::PointCloud2::UniquePtr _point_cloud)
 {
+    std::cout << "In callback Elevation Mapping" << std::endl;
     std::chrono::system_clock::time_point begin = std::chrono::system_clock::now();
     last_point_cloud_update_time_ = rclcpp::Time(_point_cloud->header.stamp, RCL_ROS_TIME);
 
@@ -76,9 +79,12 @@ void ElevationMapping::callbackPointcloud(const sensor_msgs::msg::PointCloud2::U
         robot_pose_covariance = Eigen::Map<const Eigen::MatrixXd>(pose_msg->pose.covariance.data(), 6, 6);
     }
 
+
+
     // process point cloud -> point_cloud_map_frame, height_variance
     PointCloudType::Ptr point_cloud_map_frame(new PointCloudType);
     Eigen::VectorXf height_variance;
+    std::cout << "Before process" << std::endl;
     if (!sensor_processor_->process(_point_cloud, robot_pose_covariance, point_cloud_map_frame, height_variance))
     {
         // if not properly processed, determine err type.
@@ -278,5 +284,5 @@ bool ElevationMapping::readParameters()
 
 }   
 
-#include <rclcpp_components/register_node_macro.hpp>
+#include "rclcpp_components/register_node_macro.hpp"
 RCLCPP_COMPONENTS_REGISTER_NODE(elevation_mapping::ElevationMapping)

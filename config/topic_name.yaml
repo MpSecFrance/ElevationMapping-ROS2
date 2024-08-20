@@ -1,8 +1,11 @@
 /**:
   ros__parameters:
     input:
-      point_cloud: "/camera/camera/depth/color/points" # d435i Pointcloud
+      # point_cloud: "/lio_sam/mapping/map_global" # d435i Pointcloud
+      point_cloud: "/os_cloud_node/points" # d435i Pointcloud
+      # point_cloud: "/lio_sam/mapping/map_local" # d435i Pointcloud
+      # point_cloud: "/stereo/points" # d435i Pointcloud
       # pose_covariance: "/camera/camera/pose"
-      pose_covariance: "/camera/camera/pose_covariance" # Odom / localization need
+      pose_covariance: "/odom_lidar" # Odom / localization need
     output:
       raw_map: raw_elevation_map

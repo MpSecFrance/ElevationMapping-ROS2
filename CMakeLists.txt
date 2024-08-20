@@ -37,6 +37,7 @@ find_package(filters REQUIRED)
 find_package(message_filters REQUIRED)
 
 find_package(PCL REQUIRED)
+find_package(pcl_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 if(BUILD_TESTING)
@@ -63,6 +64,7 @@ set(dependencies
   tf2
   filters
   message_filters
+  pcl_msgs
 )
 add_executable(${PROJECT_NAME}_node
   src/elevation_mapping_node.cpp
@@ -81,6 +83,7 @@ target_include_directories(${PROJECT_NAME}_node
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}> # Eigen3
   $<BUILD_INTERFACE:${PCL_INCLUDE_DIR}> # Eigen3
+  
 )
 
 target_link_libraries(${PROJECT_NAME}_node
@@ -90,6 +93,8 @@ target_link_libraries(${PROJECT_NAME}_node
 
 ament_target_dependencies(${PROJECT_NAME}_node
   ${dependencies}
+  pcl_msgs
+  "rclcpp_components"
 )
 
 install(TARGETS
@@ -127,6 +132,9 @@ target_link_libraries(${PROJECT_NAME}
 
 ament_target_dependencies(${PROJECT_NAME}
   ${dependencies}
+  "rclcpp_components"
+  pcl_msgs
+
 )
 rclcpp_components_register_nodes(${PROJECT_NAME} "elevation_mapping::ElevationMapping")
 set(node_plugins "${node_plugins}elevation_mapping::ElevationMapping;$<TARGET_FILE:${PROJECT_NAME}>\n")
@@ -147,6 +155,7 @@ add_library(${PROJECT_NAME}_post_processor SHARED
 )
 ament_target_dependencies(${PROJECT_NAME}_post_processor
   ${dependencies}
+  "rclcpp_components"
 )
 target_include_directories(${PROJECT_NAME}_post_processor
   PUBLIC
